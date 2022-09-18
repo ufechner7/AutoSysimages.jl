@@ -512,9 +512,15 @@ function install()
     @info "AutoSysimages: Installing AutoSysimages"
     if Sys.islinux()
         startscript = joinpath(@__DIR__, "..", "scripts", "linux", "asysimg")
-        installation_path= joinpath(Sys.BINDIR, "asysimg")
-        cp(startscript, installation_path, force=true)
-        chmod(installation_path, 0o770) # make executable: rwxrwx--- 
+        home = get(ENV, "HOME", nothing)
+        installation_path= joinpath(home, ".local", "bin")
+        if !isdir(installation_path)
+            @warn "AutoSysimages: Installation path $installation_path does not exist. Creating it."
+            mkpath(installation_path)
+        end
+        installation_file = joinpath(installation_path, "asysimg")
+        cp(startscript, installation_file, force=true)
+        chmod(installation_file, 0o770) # make executable: rwxrwx--- 
     else
         @warn "AutoSysimages: Installation not supported on this platform."
     end
