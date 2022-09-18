@@ -13,6 +13,7 @@ import REPL: REPL.TerminalMenus.request, REPL.TerminalMenus.RadioMenu, REPL.Term
 
 export start, latest_sysimage, julia_args, build_sysimage, remove_old_sysimages
 export packages_to_include, select_packages, status, add, remove, active_dir
+export install
 
 include("snooping.jl")
 include("build-PackageCompiler.jl")
@@ -505,6 +506,18 @@ function _load_preference(key::String)
         end
     end
     return nothing
+end
+
+function install()
+    @info "AutoSysimages: Installing AutoSysimages"
+    if Sys.islinux()
+        startscript = joinpath(@__DIR__, "..", "scripts", "linux", "asysimg")
+        installation_path= joinpath(Sys.BINDIR, "asysimg")
+        cp(startscript, installation_path, force=true)
+        chmod(installation_path, 0o770) # make executable: rwxrwx--- 
+    else
+        @warn "AutoSysimages: Installation not supported on this platform."
+    end
 end
 
 end # module
